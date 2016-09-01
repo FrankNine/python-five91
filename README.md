@@ -109,7 +109,14 @@ print (json.dumps(result, indent=4, ensure_ascii=False))
 
 ### Region code table
 
-(under construction)
+| Code | Meaning    |
+| ---- | ---------- |
+| 0    | 全台灣     |
+| 1    | 台北市     |
+| 3    | 新北市     |
+| 4    | 新竹市     |
+| 6    | 桃園市     |
+| 8    | 台中市     |
 
 ### Kind code table
 
@@ -117,8 +124,23 @@ print (json.dumps(result, indent=4, ensure_ascii=False))
 
 ### Rent price table
 
-(under construction)
+| Code | Meaning       |
+| ---- | ------------- |
+| 0    | 不限          |
+| 1    | 5000元以下    |
+| 2    | 5000-10000元  |
+| 3    | 10000-15000元 |
+| 4    | 15000-20000元 |
+| 5    | 20000-40000元 |
+| 6    | 40000元以上   |
 
 ### Pattern code table
 
-(under construction)
+| Code | Meaning  |
+| ---- | -------- |
+| 0    | 不限     |
+| 1    |  1房     |
+| 2    |  2房     |
+| 3    |  3房     |
+| 4    |  4房     |
+| 5    |  5房以上 |
