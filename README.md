@@ -118,6 +118,8 @@ print (json.dumps(result, indent=4, ensure_ascii=False))
 | 6    | 桃園市     |
 | 8    | 台中市     |
 
+(以下暫略)
+
 ### Kind code table
 
 (under construction)
