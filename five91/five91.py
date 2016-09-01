@@ -53,8 +53,7 @@ class Rent591():
             #   "community":
             # }
             response_result = json.loads(response.read().decode('utf-8'))
-            result = self.__translate_result(response_result)
-            print(result)
+            return self.__translate_result(response_result)
 
     def __translate_common_object(self, item):
         """
@@ -134,7 +133,7 @@ class Rent591():
             result['recom'].append(recom_object)
         soup.decompose()
 
-        return json.dumps(result, ensure_ascii=False)
+        return result
 
 
 class Sale591():
