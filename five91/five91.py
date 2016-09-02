@@ -21,6 +21,16 @@ class Rent591():
         pass
 
     def search(self, region=1, kind=None, section=None, rentprice=0, pattern=None, first_row=0, total_rows=None):
+        # TODO(yuxioz):
+        # shape (multi-opt) {1: '公寓', 2: '電梯大夏', 3: '透天厝', 4:'別墅'}
+        # role (multi-opt) {1: '屋主刊登', 2: '代理人刊登', 3: '仲介刊登'}
+        # floor "floor=1,5", "1,", ",5"
+        # sex 1: '男生' 2: '女生'
+        # 其他條件
+        # 提供設備
+        # 提供家具
+        # keywords
+
         values = {'module': 'search',
                   'action': 'rslist',
                   'is_new_list': 1,
