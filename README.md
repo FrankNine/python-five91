@@ -93,19 +93,20 @@ print (json.dumps(result, indent=4, ensure_ascii=False))
 
 ### Search parameters
 
-- `region`: integer, default is `1`, please reference "Region code table".
-- `kind`: integer, can be skipped, please reference "Kind code table".
-- `section`: integer, can be skipped, please reference "Section code table".
-- `rentprice`: integer, default is `0`, its the range of rent price, please reference "Rent price table".
-- `pattern`: integer, means "格局" in chinese, please reference "Pattern code table".
+- `region`: integer, default is `1`, please reference "Region value-txt table".
+- `kind`: integer, can be skipped, please reference "Kind value-txt table".
+- `section`: integer, can be skipped, please reference "Section value-txt table".
+- `rentprice`: integer, default is `0`, its the range of rent price, please reference "Rent value-txt table".
+- `pattern`: integer, means "格局" in chinese, please reference "Pattern value-txt table".
 - `first_row`: pagination related, please see "Pagination".
 - `total_rows`: pagination related, please see "Pagination".
+- `shType`: `hurryRent` = "急租"，`host` = "屋主"
 
 ## Pagination
 
 (under construction)
 
-## Code Tables
+## Variable Tables
 
 ### Region value-txt table
 
@@ -152,6 +153,38 @@ print (json.dumps(result, indent=4, ensure_ascii=False))
 |   11  | 南港區 |
 |   6   | 萬華區 |
 
+| value |   txt  |
+|:-----:|:------:|
+|   26  | 板橋區 |
+|   38  | 中和區 |
+|   50  | 淡水區 |
+|   44  | 新莊區 |
+|   43  | 三重區 |
+|   34  | 新店區 |
+|   37  | 永和區 |
+|   27  | 汐止區 |
+|   46  | 林口區 |
+|   39  | 土城區 |
+|   41  | 樹林區 |
+|   47  | 蘆洲區 |
+|   40  | 三峽區 |
+|   48  | 五股區 |
+|   45  | 泰山區 |
+|   42  | 鶯歌區 |
+|   28  | 深坑區 |
+|   49  | 八里區 |
+|   51  | 三芝區 |
+|   30  | 瑞芳區 |
+|   20  | 萬里區 |
+|   21  | 金山區 |
+|   33  | 貢寮區 |
+|   31  | 平溪區 |
+|   29  | 石碇區 |
+|   52  | 石門區 |
+|   36  | 烏來區 |
+|   35  | 坪林區 |
+|   32  | 雙溪區 |
+
 ### Kind value-txt table
 
 | value |    txt   |
@@ -173,6 +206,11 @@ print (json.dumps(result, indent=4, ensure_ascii=False))
 
 * search with kind value >= 5 is not supported.
 
+### shType values
+
+- `hurryRent`: "急租"
+- `host`: "屋主"
+
 ### Rent price value-txt table
 
 | value |      txt      |
@@ -185,13 +223,68 @@ print (json.dumps(result, indent=4, ensure_ascii=False))
 |   5   | 20000-40000元 |
 |   6   | 40000元以上   |
 
-### Pattern code table
+### Pattern value-txt table
 
-| Code | Meaning  |
-| ---- | -------- |
-| 0    | 不限     |
-| 1    |  1房     |
-| 2    |  2房     |
-| 3    |  3房     |
-| 4    |  4房     |
-| 5    |  5房以上 |
+| value |   txt   |
+|:-----:|:-------:|
+|   0   |   不限  |
+|   1   |   1房   |
+|   2   |   2房   |
+|   3   |   3房   |
+|   4   |   4房   |
+|   5   | 5房以上 |
+
+### Area value-txt table
+
+| value |    txt   |
+|:-----:|:--------:|
+|   0   | 不限     |
+|   1   | 20坪以下 |
+|   2   | 20-30坪  |
+|   3   | 30-40坪  |
+|   4   | 40-50坪  |
+|   5   | 50坪以上 |
+
+### Shape value-txt table
+
+| value |    txt   |
+|:-----:|:--------:|
+|   1   |   公寓   |
+|   2   | 電梯大廈 |
+|   3   |  透天厝  |
+|   4   |   別墅   |
+
+### Role value-txt table
+
+| value |     txt    |
+|:-----:|:----------:|
+|   1   | 屋主刊登   |
+|   2   | 代理人刊登 |
+|   3   | 仲介刊登   |
+
+### Other value-txt table
+
+|   value   |     txt    |
+|:---------:|:----------:|
+| cartplace | 有車位     |
+| balcony_1 | 有陽台     |
+| cook      | 可開伙     |
+| pet       | 可養寵物   |
+| trabus    | 近公車站   |
+| lease     | 可短期租賃 |
+
+### Option value-txt table
+
+|    value   |     txt    |
+|:----------:|:----------:|
+| tv         | 有電視     |
+| cold       | 有冷氣     |
+| icebox     | 有冰箱     |
+| hotwater   | 有熱水器   |
+| washer     | 有洗衣機   |
+| naturalgas | 有天然瓦斯 |
+| four       | 有第四台   |
+| broadband  | 有網路     |
+| bed        | 床         |
+| wardrobe   | 衣櫃       |
+| sofa       | 沙發       |
