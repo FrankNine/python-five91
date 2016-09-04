@@ -20,32 +20,105 @@ class Rent591():
         self.request_url = 'https://rent.591.com.tw/index.php'
         pass
 
-    def search(self, region=1, kind=None, section=None, rentprice=0, pattern=None, first_row=0, total_rows=None):
-        # TODO(yuxioz):
-        # shape (multi-opt) {1: '公寓', 2: '電梯大夏', 3: '透天厝', 4:'別墅'}
-        # role (multi-opt) {1: '屋主刊登', 2: '代理人刊登', 3: '仲介刊登'}
-        # floor "floor=1,5", "1,", ",5"
-        # sex 1: '男生' 2: '女生'
-        # 其他條件
-        # 提供設備
-        # 提供家具
-        # keywords
+    def search(self, region=0, section=None, kind=None, shType=None,
+        listview='txt', rentprice=None, pattern=None, area=None, shape=None,
+        role=None, floor=None, sex=None, other=None, option=None, keywords=None,
+        order=None, orderType=None, first_row=None, total_rows=None):
+        """ Search by region and section.
 
+        (under construction)
+
+        Args:
+            region: A number, the number represented region is list in
+                <Region value-txt table>.
+            section: Optional variable, number, the number represented section
+                is list in <Section value-txt table>; a number list is also 
+                valid, and only first five element is applied.
+            kind: Optional variable, number, the number represented kind is list
+                in <Kind value-txt table>.
+            shType: Optional variable, string, should be 'hurryRent' or 'host'
+            listview: string, should be 'txt' or 'img'. 'img' is more info but
+                slow.
+            rentprice: Optional variable, could be a number or a list/tuple of
+                two numbers. If it's only a number, the price is defined in
+                <rentprice value-txt table>; if it's a list, the list means the
+                range of price.
+            pattern: Optional variable, number, the number represented pattern
+                is list in <Pattern value-txt table>.
+            area: Optional variable, could be a number or a list/tuple of two
+                numbers. If it's only a number, the area is defined in
+                <area value-txt table>; if it's a list, the list means the range
+                of area.
+            shape: Optional variable, number or a list of number. The meaning of
+                number is defined in <Shape value-txt table>.
+            role: Optional variable, number or a list of number. The meaning of
+                number is defined in <Role value-txt table>.
+            floor: Optional variable, should be a list/tuple of two elements,
+                each element could be number or `None`.
+            sex: Optional variable, number, `1` for male and `2` for female.
+            other: Optional variable, should be a list containing other-value
+                string. Available other-value strings is list in
+                <Other value-txt table>.
+            option: Optional variable, should be a list containing option-value
+                string. Available option-value strings is list in
+                <Option value-txt table>.
+            keywords: Arbitrary string as search keyword.
+            order: Optional variable, string, which data to order by, may be one
+                of ['area', 'money', 'visitor', 'posttime', 'nearby'].
+            orderType: Optional variable, 'asc' or 'desc'.
+
+        Returns:
+        """
+        # searchtype: {1: 'rgsc', 2: 'busness', 3: 'school', 4: 'mrg'}
+        #                             ^^^^^^^ no typo
         values = {'module': 'search',
                   'action': 'rslist',
                   'is_new_list': 1,
                   'type': 1,
                   'searchtype': 1,
-                  'region': region,
-                  'listview': 'txt',
-                  'rentprice': rentprice,
-                  'firstRow': first_row}
-        if kind is not None:
-            values['kind'] = ','.join(kind)
+                  'listview': listview,
+                  'region': region}
         if section is not None:
-            values['secion'] = ','.join(section)
+            if type(section) is list or type(section) is tuple:
+                values['section'] = ','.join([str(x) for x in section[:5]])
+            else:
+                values['section'] = section
+        if kind is not None:
+            if type(kind) is list or type(kind) is tuple:
+                values['kind'] = ','.join(kind)
+            else:
+                values['kind'] = kind
+        if shType is not None and shType is in ['hurryRent', 'host']:
+            values['shType'] = shType
+        if rentprice is not None:
+            if type(rentprice) is list or type(rentprice) is tuple:
+                values['rentprice'] = ','.join(rentprice[:2])
+            else:
+                values['rentprice'] = rentprice
         if pattern is not None:
             values['pattern'] = pattern
+        if area is not None:
+            if type(area) is list or type(area) is tuple:
+                values['area'] = ','.join(area[:2])
+            else:
+                values['area'] = area
+        if shape is not None:
+            if type(shape) is list or type(shape) is tuple:
+                values['shape'] = ','.join(shape)
+            else:
+                values['shape'] = shape
+        if role is not None:
+            if type(role) is list or type(role) is tuple:
+                values['role'] = ','.join(role)
+            else:
+                values['role'] = role
+        # floor
+        # sex
+        # other
+        # option
+        # keywords
+        # order, orderType
+        # first_row
         if total_rows is not None:
             values['totalRows'] = total_rows
         data = urlencode(values)
@@ -65,19 +138,49 @@ class Rent591():
             response_result = json.loads(response.read().decode('utf-8'))
             return self.__translate_result(response_result)
 
-    def __translate_common_object(self, item):
+    def __translate_img_object(self, item):
         """
-        Translate a html structure of common object to a rent info.
+        """
+        # <ul class="shInfo"   >
+        #     <li class="info">
+        #         <div class="left" data-bind="xxxxxxx" data-img-length="14">
+        #             <a href="rent-detail-xxxxxxx.html" class="imgbd" target="_blank" title="專屬露臺可看101"   ><img src="https://cp1.591.com.tw/house/active/2016/05/10/146288090393453000_128x92.jpg" width="128" height="92" alt="專屬露臺可看101" /></a>
+        #             <div class="imgMore"><a href="rent-detail-4416981.html" target="_blank">14張照片</a></div>
+        #         </div>
+        #         <div class="right">
+        #             <p class="title"><a href="rent-detail-xxxxxxx.html" target="_blank" class="house_url" title="專屬露臺可看101"><strong>專屬露臺可看101</strong></a><em class="recomTag">黃金曝光</em></p>
+        #             <p>敦南雅緻　台北市-信義區&nbsp;和平東路三段509巷7弄13-1號</p>
+        #             <p>整層住家，<span class="layout">1房1廳1衛</span>，</span>樓層：5/6</p>
+        #             <p class="fc-gry">59分鐘內更新&nbsp;&nbsp;屋主 林小姐&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        #             <p class="options opacity"><a href="javascript:;" class="map" data-bind="4416981"  onclick="ga('send', 'event','列表頁','物件列表','地圖',1);">地圖</a><a href="javascript:;" class="fav" data-bind="4416981"  onclick="ga('send', 'event','列表頁','物件列表','收藏',1);">收藏</a><a href="rent-detail-4416981.html#faq" class="qs"  onclick="ga('send', 'event','列表頁','物件列表','問答',1);">問答(1)</a></p>
+        #         </div>
+        #     </li>
+        #     <li class="area rentByArea">
+        #         18坪
+        #     </li>
+        #     <li class="price fc-org">
+        #         <p><span class="oldprice"><strong></strong></span></p>
+        #         <strong class="">28,000元</strong>
+        #         <p></p>
+        #     </li>
+        #     <li class="pattern">165人</li>
+        # </ul>
 
-        <ul class="shTxInfo">
-            <li class="rs"><strong><a class="txt-sh-region" href="javascript:;" data-bind="1">台北市</a>-<strong><a class="txt-sh-section" href="javascript:;" data-bind="12">文山區</a></strong></strong></li>
-            <li class="address"><a href="rent-detail-xxxxxxx.html" target="_blank" title="某某路四段某某華廈!!吉祥入住!!來電成交!!">某某路四段某某華廈!!吉祥入住..</a>&nbsp;<span class="ImgStatus" title="內有房屋照片">附圖</span>&nbsp;&nbsp;(1)</li>
-            <li class="area">32坪/整層</li>
-            <li class="price"><strong class="fc-org">12,800元</strong></li>
-            <li class="visited">543</li>
-            <li class="update"><strong class="fc-red"><strong class="TodayTime">今日</strong></strong></li>
-        </ul>
+        pass
+
+    def __translate_common_object(self, item):
+        """Translate a html structure of common object to a rent info.
         """
+
+        # <ul class="shTxInfo">
+        #     <li class="rs"><strong><a class="txt-sh-region" href="javascript:;" data-bind="1">台北市</a>-<strong><a class="txt-sh-section" href="javascript:;" data-bind="12">文山區</a></strong></strong></li>
+        #     <li class="address"><a href="rent-detail-xxxxxxx.html" target="_blank" title="某某路四段某某華廈!!吉祥入住!!來電成交!!">某某路四段某某華廈!!吉祥入住..</a>&nbsp;<span class="ImgStatus" title="內有房屋照片">附圖</span>&nbsp;&nbsp;(1)</li>
+        #     <li class="area">32坪/整層</li>
+        #     <li class="price"><strong class="fc-org">12,800元</strong></li>
+        #     <li class="visited">543</li>
+        #     <li class="update"><strong class="fc-red"><strong class="TodayTime">今日</strong></strong></li>
+        # </ul>
+
         tag_a_section = item.find_all('a', {'class': 'txt-sh-section'})[0]
         section_txt = tag_a_section.get_text()
         tag_li_address = item.find_all('li', {'class': 'address'})[0]
@@ -99,16 +202,16 @@ class Rent591():
                 'price': price}
 
     def __translate_recommended_object(self, item):
+        """Translate a html structure of recommended object to a rent info.
         """
-        Translate a html structure of recommended object to a rent info.
 
-        <div class="content">
-            <p><a href="rent-detail-xxxxxxx.html" target="_blank" title="天母某某居(飯店式管理)" google-data-stat="出售_精選推薦_精選推薦列表"><img src="https://cp2.591.c...x127.jpg" width="172" height="127" alt="天母某某居(飯店式管理)" /></a></p>
-            <p class="name"><a href="rent-detail-xxxxxxx.html" target="_blank" title="天母某某居(飯店式管理)" google-data-stat="出售_精選推薦_精選推薦列表"><strong>天母某某居(飯店式管理...</strong></a></p>
-            <p>士林區 - 整層住家<em class="area">12.34坪</em></p>
-            <p class="fc-org"><strong>80,000元</strong></p>
-        </div>
-        """
+        # <div class="content">
+        #     <p><a href="rent-detail-xxxxxxx.html" target="_blank" title="天母某某居(飯店式管理)" google-data-stat="出售_精選推薦_精選推薦列表"><img src="https://cp2.591.c...x127.jpg" width="172" height="127" alt="天母某某居(飯店式管理)" /></a></p>
+        #     <p class="name"><a href="rent-detail-xxxxxxx.html" target="_blank" title="天母某某居(飯店式管理)" google-data-stat="出售_精選推薦_精選推薦列表"><strong>天母某某居(飯店式管理...</strong></a></p>
+        #     <p>士林區 - 整層住家<em class="area">12.34坪</em></p>
+        #     <p class="fc-org"><strong>80,000元</strong></p>
+        # </div>
+
         ps = item.find_all('p')
         title = ps[0].a.get('title')
         url = urljoin(self.request_url, ps[0].a.get('href'))
