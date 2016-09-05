@@ -288,3 +288,9 @@ print (json.dumps(result, indent=4, ensure_ascii=False))
 | bed        | 床         |
 | wardrobe   | 衣櫃       |
 | sofa       | 沙發       |
+
+## TODO
+
+- Process of `img` search result
+- Process of detail page to structure json info
+- GeoData search 
