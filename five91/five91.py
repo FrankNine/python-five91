@@ -20,10 +20,10 @@ class Rent591():
         self.request_url = 'https://rent.591.com.tw/index.php'
         pass
 
-    def search(self, region=0, section=None, kind=None, shType=None,
-        listview='txt', rentprice=None, pattern=None, area=None, shape=None,
-        role=None, floor=None, sex=None, other=None, option=None, keywords=None,
-        order=None, orderType=None, first_row=None, total_rows=None):
+    def search(self, region=1, section=None, kind=None, shType=None,
+               listview='txt', rentprice=None, pattern=None, area=None, shape=None,
+               role=None, min_floor=None, max_floor=None, sex=None, other=None, option=None, keywords=None,
+               order=None, orderType=None, first_row=None, total_rows=None):
         """ Search by region and section.
 
         (under construction)
@@ -78,47 +78,85 @@ class Rent591():
                   'searchtype': 1,
                   'listview': listview,
                   'region': region}
+        # section
         if section is not None:
             if type(section) is list or type(section) is tuple:
                 values['section'] = ','.join([str(x) for x in section[:5]])
             else:
                 values['section'] = section
+        # kind
         if kind is not None:
             if type(kind) is list or type(kind) is tuple:
                 values['kind'] = ','.join(kind)
             else:
                 values['kind'] = kind
-        if shType is not None and shType is in ['hurryRent', 'host']:
+        # shType
+        if shType is not None and shType in ['hurryRent', 'host']:
             values['shType'] = shType
+        # rentprice
         if rentprice is not None:
             if type(rentprice) is list or type(rentprice) is tuple:
                 values['rentprice'] = ','.join(rentprice[:2])
             else:
                 values['rentprice'] = rentprice
+        # pattern
         if pattern is not None:
             values['pattern'] = pattern
+        # area
         if area is not None:
             if type(area) is list or type(area) is tuple:
                 values['area'] = ','.join(area[:2])
             else:
                 values['area'] = area
+        # shape
         if shape is not None:
             if type(shape) is list or type(shape) is tuple:
                 values['shape'] = ','.join(shape)
             else:
                 values['shape'] = shape
+        # role
         if role is not None:
             if type(role) is list or type(role) is tuple:
                 values['role'] = ','.join(role)
             else:
                 values['role'] = role
         # floor
+        if min_floor is not None or max_floor is not None:
+            floor = []
+            floor.append('' if min_floor is None else min_floor)
+            fllor.append('' if max_floor is None else max_floor)
+            values['floor'] = ','.join(floor)
         # sex
+        if sex is not None and sex in [1, 2]:
+            values['sex'] = sex
         # other
+        if other is not None:
+            if type(other) is list or type(other) is tuple:
+                values['other'] = ','.join(other)
+            else:
+                values['other'] = other
         # option
+        if option is not None:
+            if type(option) is list or type(option) is tuple:
+                values['option'] = ','.join(option)
+            else:
+                values['option'] = option
         # keywords
+        if keywords is not None:
+            if type(keywords) is list or type(keywords) is tuple:
+                values['keywords'] = ','.join(keywords)
+            else:
+                values['keywords'] = keywords
         # order, orderType
+        if order is not None and order in ['area', 'money', 'visitor', 'posttime', 'nearby']:
+            values['order'] = order
+            values['orderType'] = 'asc'
+            if orderType is not None and orderType in ['asc', 'desc'] and order is not 'nearby':
+                values['orderType'] = orderType
         # first_row
+        if first_row is not None:
+            values['firstRow'] = first_row
+        # total_rows
         if total_rows is not None:
             values['totalRows'] = total_rows
         data = urlencode(values)
@@ -139,20 +177,22 @@ class Rent591():
             return self.__translate_result(response_result)
 
     def __translate_img_object(self, item):
-        """
+        """Translate a html structure of common object in img view to a rent info.
         """
         # <ul class="shInfo"   >
         #     <li class="info">
         #         <div class="left" data-bind="xxxxxxx" data-img-length="14">
         #             <a href="rent-detail-xxxxxxx.html" class="imgbd" target="_blank" title="專屬露臺可看101"   ><img src="https://cp1.591.com.tw/house/active/2016/05/10/146288090393453000_128x92.jpg" width="128" height="92" alt="專屬露臺可看101" /></a>
-        #             <div class="imgMore"><a href="rent-detail-4416981.html" target="_blank">14張照片</a></div>
+        #             <div class="imgMore"><a href="rent-detail-xxxxxxx.html" target="_blank">14張照片</a></div>
         #         </div>
         #         <div class="right">
         #             <p class="title"><a href="rent-detail-xxxxxxx.html" target="_blank" class="house_url" title="專屬露臺可看101"><strong>專屬露臺可看101</strong></a><em class="recomTag">黃金曝光</em></p>
-        #             <p>敦南雅緻　台北市-信義區&nbsp;和平東路三段509巷7弄13-1號</p>
+        #             <p>敦南雅緻　台北市-信義區 和平東路三段xxx巷x弄xx-x號</p>
         #             <p>整層住家，<span class="layout">1房1廳1衛</span>，</span>樓層：5/6</p>
-        #             <p class="fc-gry">59分鐘內更新&nbsp;&nbsp;屋主 林小姐&nbsp;&nbsp;&nbsp;&nbsp;</p>
-        #             <p class="options opacity"><a href="javascript:;" class="map" data-bind="4416981"  onclick="ga('send', 'event','列表頁','物件列表','地圖',1);">地圖</a><a href="javascript:;" class="fav" data-bind="4416981"  onclick="ga('send', 'event','列表頁','物件列表','收藏',1);">收藏</a><a href="rent-detail-4416981.html#faq" class="qs"  onclick="ga('send', 'event','列表頁','物件列表','問答',1);">問答(1)</a></p>
+        #             <p class="fc-gry">59分鐘內更新  屋主 x小姐    </p>
+        #             <p class="options opacity"><a href="javascript:;" class="map" data-bind="xxxxxxx"  onclick="ga('send', 'event','列表頁','物件列表','地圖',1);">地圖</a>
+        #                                        <a href="javascript:;" class="fav" data-bind="xxxxxxx"  onclick="ga('send', 'event','列表頁','物件列表','收藏',1);">收藏</a>
+        #                                        <a href="rent-detail-xxxxxxx.html#faq" class="qs"  onclick="ga('send', 'event','列表頁','物件列表','問答',1);">問答(1)</a></p>
         #         </div>
         #     </li>
         #     <li class="area rentByArea">
@@ -169,7 +209,7 @@ class Rent591():
         pass
 
     def __translate_common_object(self, item):
-        """Translate a html structure of common object to a rent info.
+        """Translate a html structure of common object in txt view to a rent info.
         """
 
         # <ul class="shTxInfo">
@@ -229,7 +269,10 @@ class Rent591():
 
     def __translate_result(self, origin_result):
         result = {}
-        result['region'] = to_int(origin_result['region'])
+        if origin_result['region'] is '':
+            result['region'] = 0
+        else:
+            result['region'] = to_int(origin_result['region'])
         result['count'] = to_int(origin_result['count'])
 
         result['main'] = []
