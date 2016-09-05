@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='five91',
-      version='0.1',
+      version='0.1.1',
       description='Simple 591.com.tw wrapper',
       url='http://github.com/tzengyuxio/python-five91',
       author='Tzeng Yuxio',
